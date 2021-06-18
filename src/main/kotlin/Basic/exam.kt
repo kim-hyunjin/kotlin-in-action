@@ -1,5 +1,6 @@
 package Basic
 
+import java.lang.Exception
 import java.util.Random
 
 fun main(args: Array<String>) {
@@ -108,4 +109,71 @@ class Rectangle(val height: Int, val width: Int) {
 fun createRandomRectangle(): Rectangle {
     val random = Random()
     return Rectangle(random.nextInt(), random.nextInt())
+}
+
+/*
+* enum과 when
+* enum 클래스 안에도 프로퍼티나 메소드를 정의할 수 있다.
+* */
+enum class Color(val r: Int, val g: Int, val b: Int) {
+    // 각 상수를 생성할 때 그에 대한 프로퍼티 값을 지정한다.
+    RED(255, 0 , 0),
+    ORANGE(255, 165, 0),
+    YELLOW(255, 255, 0),
+    GREEN(0, 255, 0),
+    BLUE(0, 0, 255),
+    INDIGO(75, 0, 130),
+    VIOLET(238, 130, 238); // 끝에 반드시 세미콜론을 사용해야 한다.
+
+    fun rgb() = (r * 256 + g) * 256 + b
+}
+
+/*
+* when
+* 자바의 switch에 해당하는 코틀린 구성 요소는 when이다.
+* if와 마찬가지로 when도 값을 만들어내는 식이다.
+* 자바와 달리 각 분기의 끝에 break를 넣지 않아도 된다.
+* */
+fun getMnemonic(color: Color) =
+    when (color) {
+        Color.RED -> "빨"
+        Color.ORANGE -> "주"
+        Color.YELLOW -> "노"
+        Color.GREEN -> "초"
+        Color.BLUE -> "파"
+        Color.INDIGO -> "남"
+        Color.VIOLET -> "보"
+
+    }
+
+// 한 분기 안에서 여러 값을 매치 패턴으로 사용할 수도 있다. 이 경우 값 사이를 콤마(,)로 분리한다.
+fun getWarmth(color: Color) = when(color) {
+    Color.RED, Color.ORANGE, Color.YELLOW -> "warm"
+    Color.GREEN -> "neutral"
+    Color.BLUE, Color.INDIGO, Color.VIOLET -> "cold"
+}
+
+/*
+* 분기 조건에 상수만을 사용할 수 있는 자바 switch와 달리
+* 코틀린 when 분기 조건은 임의의 객체를 허용한다.
+*
+* 아래의 setOf는 여러 객체를 그 객체들을 포함하는 집합인 Set 객체로 만드는 함수
+* 각 원소의 순서는 중요치 않다.
+* */
+fun mixColor(c1: Color, c2: Color) = when (setOf(c1, c2)) {
+    setOf(Color.RED, Color.YELLOW) -> Color.ORANGE
+    setOf(Color.YELLOW, Color.BLUE) -> Color.GREEN
+    setOf(Color.BLUE, Color.VIOLET) -> Color.INDIGO
+    else -> throw Exception("Dirty Color")
+}
+
+/*
+* 인자가 없는 when 식을 사용하면 불필요한 객체 생성을 막을 수 있다.
+* 코드는 약간 읽기 어려워지지만 성능을 더 향상시키기 위해 그 정도 비용을 감수해야 하는 경우도 자주 있다.
+* */
+fun mixColorOptimized(c1: Color, c2: Color) = when {
+    (c1 == Color.RED && c2 == Color.YELLOW) || (c1 == Color.YELLOW && c2 == Color.RED) -> Color.ORANGE
+    (c1 == Color.YELLOW && c2 == Color.BLUE) || (c1 == Color.BLUE && c2 == Color.YELLOW) -> Color.GREEN
+    (c1 == Color.BLUE && c2 == Color.VIOLET) || (c1 == Color.VIOLET && c2 == Color.BLUE) -> Color.INDIGO
+    else -> throw Exception("Dirty Color")
 }
