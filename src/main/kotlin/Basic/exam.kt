@@ -1,5 +1,7 @@
 package Basic
 
+import java.util.Random
+
 fun main(args: Array<String>) {
     val name = if (args.size > 0) args[0] else "Kotlin"
     // 문자열 템플릿
@@ -12,6 +14,12 @@ fun main(args: Array<String>) {
 
     // 중괄호로 둘러싼 식 안에서 큰 따음표를 사용할 수도 있다.
     println("Hello, ${if (args.size > 0) args[0] else "someone"}!")
+
+    val person = Person("Bob", true)
+    println(person.name)
+
+    val rectangle = createRandomRectangle()
+    println(rectangle.isSquare)
 }
 
 /*
@@ -73,4 +81,31 @@ fun aboutValAndVar() {
     var answer = 42
     // 컴파일 에러
     // answer = "no answer"
+}
+
+/*
+* 클래스와 프로퍼티
+* 클래스라는 개념의 목적은 데이터를 캡슐화하고 캡슐화한 데이터를 다루는 코드를 한 주체 아래 가두는 것이다.
+* 자바에서는 데이터를 필드에 저장하며, 멤버 필드의 가시성은 보통 비공개(private)다.
+* 클래스는 자신을 사용하는 클라이언트가 그 데이터에 접근하는 통로로 쓸 수 있는 접근자 메소드를 제공한다.
+* 보통 게터(getter), 세터(setter)를 추가 제공할 수 있다.
+* 자바에서는 필드와 접근자를 한데 묶어 프로퍼티라고 부른다.
+*
+* 코틀린은 프로퍼티를 언어 기본 기능으로 제공하며, 코틀린의 프로퍼티는 자바의 필드와 접근자 메소드를 완전히 대체한다.
+* val은 읽기 전용,
+* var는 변경 가능한 프로퍼티다.
+* */
+class Person(val name: String, var isMarried: Boolean)
+
+// 커스텀 접근자
+class Rectangle(val height: Int, val width: Int) {
+    val isSquare: Boolean
+    get() {
+        return height == width
+    }
+}
+
+fun createRandomRectangle(): Rectangle {
+    val random = Random()
+    return Rectangle(random.nextInt(), random.nextInt())
 }
