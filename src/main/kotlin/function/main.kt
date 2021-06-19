@@ -1,9 +1,6 @@
 package function
 
-import function.strings.join
-import function.strings.joinToString
-import function.strings.joinToStringExtension
-import function.strings.lastCharProperty
+import function.strings.*
 import java.lang.StringBuilder
 import function.strings.lastChar as last // as 키워드를 사용하면 임포트한 클래스나 함수를 다른 이름으로 부를 수 있다.
 
@@ -44,6 +41,11 @@ fun main(args: Array<String>) {
     val sb = StringBuilder("Kotlin?")
     sb.lastCharProperty = '!'
     println(sb)
+
+    println("12.345-6.A".split("\\.|-".toRegex()))
+    val testPath = "/Users/hyunjin/kotlin-in-action/chapter.adoc"
+    parsePath(testPath)
+    parsePathWithRegex(testPath)
 }
 
 /*

@@ -84,3 +84,24 @@ var StringBuilder.lastCharProperty: Char
     set(value: Char) {
         this.setCharAt(length - 1, value)
     }
+
+fun parsePath(path: String) {
+    val directory = path.substringBeforeLast("/")
+    val fullName = path.substringAfterLast("/")
+
+    val fileName = fullName.substringBeforeLast(".")
+    val extension = fullName.substringAfterLast(".")
+
+    println("Dir: $directory, name: $fileName, ext: $extension")
+}
+
+fun parsePathWithRegex(path: String) {
+    // 3중 따옴표 문자열에서는 어떤 문자도 이스케이프 할 필요가 없다. 따라서 \\. 가 아니라 \.로 충분
+    // 따로 지정하지 않으면 정규식 엔진은 각 패턴을 가능한 한 가장 긴 부분 문자열과 매치하려고 시도한다.
+    val regex = """(.+)/(.+)\.(.+)""".toRegex()
+    val matchResult = regex.matchEntire(path)
+    if (matchResult != null) {
+        val (directory, fileName, extension) = matchResult.destructured
+        println("Dir: $directory, name: $fileName, ext: $extension")
+    }
+}
