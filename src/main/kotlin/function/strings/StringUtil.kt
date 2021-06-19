@@ -45,3 +45,42 @@ fun Collection<String>.join(
     prefix: String = "",
     postfix: String = ""
 ) = joinToString(separator, prefix, postfix)
+
+// 확장 함수는 오버라이드할 수 없다.
+open class View {
+    open fun click() = println("View clicked")
+}
+
+class Button: View() {
+    override fun click() = println("Button clicked")
+}
+
+// 실행 시점에 객체 타입에 따라 동적으로 호출될 대상 메소드를 결정
+fun test() {
+    val view: View = Button()
+    // view에 저장된 값의 실제 타입에 따라 호출할 메소드가 결정된다.
+    view.click() // Button clicked
+    // 하지만 확장함수는 정적으로 결정된다.
+    view.showOff() // I'm a view!
+}
+
+fun View.showOff() = println("I'm a view!")
+fun Button.showOff() = println("I'm a button!")
+
+/*
+* 어떤 클래스를 확장한 함수와 그 클래스의 멤버 함수의 이름과 시그니처가 같다면 멤버 함수가 호출된다.
+* 멤버 함수의 우선순위가 더 높다.
+* */
+
+
+/*
+* 확장 프로퍼티
+* 기존 클래스의 인스턴스 객체에 필드를 추가할 방법은 없다.
+* 따라서 확장 프로퍼티는 아무 상태도 가질 수 없다.
+* 기본 게터를 꼭 정의해야 한다. 초기화 코드도 사용할 수 없다.
+* */
+var StringBuilder.lastCharProperty: Char
+    get() = get(length - 1)
+    set(value: Char) {
+        this.setCharAt(length - 1, value)
+    }

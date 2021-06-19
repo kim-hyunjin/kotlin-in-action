@@ -3,6 +3,8 @@ package function
 import function.strings.join
 import function.strings.joinToString
 import function.strings.joinToStringExtension
+import function.strings.lastCharProperty
+import java.lang.StringBuilder
 import function.strings.lastChar as last // as 키워드를 사용하면 임포트한 클래스나 함수를 다른 이름으로 부를 수 있다.
 
 fun main() {
@@ -27,5 +29,8 @@ fun main() {
     println("Kotlin".last())
     println(list.joinToStringExtension(separator = "; ", prefix = "(", postfix = ")")) // joinToString을 마치 클래스의 멤버인 것처럼 호출할 수 있다.
     println(listOf("one", "two", "three").join(" "))
+    val sb = StringBuilder("Kotlin?")
+    sb.lastCharProperty = '!'
+    println(sb)
 }
 
