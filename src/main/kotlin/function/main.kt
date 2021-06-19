@@ -46,3 +46,21 @@ fun main(args: Array<String>) {
     println(sb)
 }
 
+/*
+* 중위 호출(infix call)과 구조 분해 선언
+*
+* 다음 두 호출은 동일하다.
+* 1.to("one")
+* 1 to one
+*
+* 인자가 하나뿐인 일반 메소드나 확장함수에 사용할 수 있다.
+* 중위 호출을 허용하고 싶으면 infix 변경자를 함수 선언 앞에 추가해야 한다.
+* infix fun Any.to(other: Any) = Pair(this, other)
+* to 함수는 Pair의 인스턴스를 반환하다. Pair는 코틀린 표준 라이브러리 클래스. 두 원소로 이루어진 순서쌍을 표현한다.
+*
+* Pair의 내용으로 두 변수를 즉시 초기화할 수 있다.
+* val (number, name) = 1 to "one"
+* 이런 기능을 구조 분해 선언(destructuring declaration)이라고 부른다.
+*
+* fun <K, V> mapOf(varargs values: Pair<K, V>): Map<K, V>
+* */
