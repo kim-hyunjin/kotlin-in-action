@@ -50,7 +50,53 @@ class RadioButton: Button3()
 
 // 클래스 외부에서 인스턴스화하지 못하게 막고 싶다면 생성자를 private으로 만들면된다.
 class Secretive private constructor() {}
+
+
+
+/**
+ * 그래도 생성자가 여럿 필요한 경우가 가끔 있다.
+ * 가장 일반적인 상황은 프레임워크 클래스를 확장해야 하는데
+ * 여러가지 방법으로 인스턴스를 초기화할 수 있게 다양한 생성자를 지원해야 하는 경우다.
+ */
+class Context
+open class AttributeSet
+open class View2 { // 주 생성자가 없다.
+    // 부 생성자들
+    constructor(ctx: Context) {
+        println("View2의 constructor(ctx)")
+    }
+    constructor(ctx: Context, attr: AttributeSet) {
+        println("View2의 constructor(ctx, attr)")
+    }
+}
+
+class MyButton: View2 {
+    // 상위 클래스의 생정자를 호출한다.
+    constructor(ctx: Context): super(ctx) {
+        println("MyButton의 constructor(ctx)")
+    }
+    constructor(ctx: Context, attr: AttributeSet): super(ctx, attr) {
+        println("MyButton의 constructor(ctx, attr)")
+    }
+}
+
+class MY_STYLE: AttributeSet()
+class MyButton2: View2 {
+    // this()를 통해 클래스 자신의 다른 생성자를 호출할 수 있다.
+    constructor(ctx: Context): this(ctx, MY_STYLE()) {
+        println("MyButton2의 constructor(ctx)")
+    }
+    constructor(ctx: Context, attr: AttributeSet): super(ctx, attr) {
+        println("MyButton2의 constructor(ctx, attr)")
+    }
+}
+
 fun main() {
     val hyun = User2("현진")
     println(hyun.isSubscribed)
+
+    val view2 = View2(Context())
+    val myButton = MyButton(Context())
+    val myButton2 = MyButton2(Context())
+
 }
