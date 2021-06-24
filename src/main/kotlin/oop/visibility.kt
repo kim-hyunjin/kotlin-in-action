@@ -38,3 +38,24 @@ protected 멤버는 오직 그 클래스와 그 클래스를 상속한 클래스
 코틀린 선언과 자바 선언의 차이 때문에 코틀린에서는 접근할 수 없는 대상을 자바에서 접근할 수 있는 경우가 생긴다.
 
  */
+
+/**
+ * 접근자의 가시성 변경
+ * 접근자의 가시성은 기본적으로 프로퍼티의 가시성과 같다.
+ * 하지만 원한다면 get이나 set앞에 가시성 변경자를 추가해서 접근자의 가시성을 변경할 수 있다.
+ *
+ */
+class LengthCounter {
+    var counter: Int = 0
+        private set // 이 클래스 밖에서 이 프로퍼티의 값을 바꿀 수 없다.
+
+    fun addWord(word: String) {
+        counter += word.length
+    }
+}
+
+fun main() {
+    val lengthCounter = LengthCounter()
+    lengthCounter.addWord("Hi!")
+    println(lengthCounter.counter)
+}
