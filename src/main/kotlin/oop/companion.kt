@@ -51,6 +51,56 @@ class User7 private constructor(val nickname: String) {
     }
 }
 
+/**
+ * 동반 객체는 클래스 안에 정의된 일반 객체다.
+ * 따라서 동반 객체에 이름을 붙이거나, 동반 객체가 인터페이스를 상속하거나,
+ * 동반 객체 안에 확장 함수와 프로퍼티를 정의할 수 있다.
+ * 특별히 이름을 지정하지 않으면 동반 객체 이름은 자동으로 Companion이 된다.
+ */
+class Person2(val name: String) {
+    companion object Loader {
+        fun fromJSON(jsonText: String): Person2 = Person2(jsonText)
+    }
+}
+
+interface JSONFactory<T> {
+    fun fromJSON(jsonText: String): T
+}
+
+class Person3(val name: String) {
+    companion object: JSONFactory<Person3> {
+        override fun fromJSON(jsonText: String): Person3 {
+            return Person3(jsonText)
+        }
+    }
+}
+
+fun <T> loadFromJSON(jsonText: String, factory: JSONFactory<T>): T {
+    return factory.fromJSON(jsonText)
+}
+
+/**
+ * 동반 객체 확장
+ * 클래스에 동반 객체가 있으면 그 객체 안에 함수를 정의함으로써 클래스에 대해 호출할 수 있는 확장함수를 만들 수 있다.
+ * 예를들어, C 라는 클래스가 있다면 C.Companion 안에 fun을 정의해 호출할 수 있다.
+ */
+// 비즈니스 로직 모듈
+class Person4(val firstName: String, val lastName: String) {
+    companion object {}
+}
+
+// 클라이언트/서버 통신 모듈
+fun Person4.Companion.fromJSON(json: String): Person4 {
+    return Person4(json, json)
+}
+
+/**
+ * 동반 객체 안에서 fronJSON 함수를 정의한 것처럼 fromJSON을 호출할 수 있다.
+ * 하지만 실제로 fronJSON은 클래스 밖에서 정의한 확장 함수다.
+ * 다른 보통 확장 함수처럼 fromJSON도 클래스 멤버 함수처럼 보이지만, 실제로는 멤버함수가 아니다.
+ */
+val p = Person4.fromJSON("json")
+
 fun main() {
     A.bar()
 
@@ -58,4 +108,22 @@ fun main() {
     val facebookUser = User7.newFacebookUser(4)
     println(subscribingUser.nickname)
     println(facebookUser.nickname)
+
+    // 아래 두 방법 모두 제대로 호출된다.
+    val person = Person2.Loader.fromJSON("{name: 'Kim'}")
+    val person2 = Person2.fromJSON("{name: 'Lee'}")
+    println(person)
+    println(person2)
+
+    /*
+     * Person3의 동반객체가 JSONFactory 인터페이스를 구현하고 있으므로,
+     * 아래와 같이 Person3 클래스의 이름만 넘겨도 된다.
+     */
+    loadFromJSON("{name: 'Hyunjin'}", Person3)
 }
+
+/**
+ * 클래스의 동반 객체는 일반 객체와 비슷한 방식으로,
+ * 클래스에 정의된 인스턴스를 가리키는 정적 필드로 컴파일 된다.
+ * 동반객체에 이름을 붙이지 않았다면 자바쪽에서 Companion 이라는 이름으로 참조에 접근할 수 있다.
+ */
