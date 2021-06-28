@@ -15,6 +15,6 @@ fun main() {
 
     val list = listOf(1, 2, 3)
     // !all을 수행한 결과와 그 조건의 부정에 대해 any를 수행한 결과는 같다.(드 모르강의 법칙)
-    println(!list.all { it === 3 }) // !를 눈치채지 못하는 경우가 있다.
-    println(list.any { it !== 3 })
+    println(!list.all { it == 3 }) // !를 눈치채지 못하는 경우가 있다.
+    println(list.any { it != 3 })
 }
