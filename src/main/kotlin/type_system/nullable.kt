@@ -71,6 +71,20 @@ fun sendEmailTo(email: String) {
 
 }
 
+/**
+ * 타입 파라미터 T를 클래스나 함수 안에서 타입 이름으로 사용하면 이름 끝에 물음표가 없더라도 널이 될 수 있는 타입이다.
+ */
+fun <T> printHashCode(t: T) { // 여기서 T는 Any? 타입이다.
+    println(t?.hashCode())
+}
+
+/**
+ * 타입 파라미터가 널이 아님을 확실히 하려면 널이 될 수 없는 타입 상한(upper bound)을 지정해야 한다.
+ */
+fun <T: Any> printHashCode2(t: T) {
+    println(t.hashCode())
+}
+
 fun main() {
     val ceo = Employee("Da Boss", null)
     val developer = Employee("Bob Smith", ceo)
