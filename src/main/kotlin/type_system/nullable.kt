@@ -50,6 +50,27 @@ fun printShippingLabel(person: Person) {
     }
 }
 
+/**
+ * 널 아님 단언 !!
+ * 느낌표를 이중으로 사용하면 어떤 값이든 널이 될 수 없는 타입으로 바꿀 수 있다.
+ * null에 대해 !!를 적용하면 NPE가 발생한다.
+ * !!를 널에 대해 사용해서 발생하는 예외의 stack trace에는
+ * 어떤 파일의 몇 번째 줄인지에 대한 정보는 들어있지만
+ * 어떤 식에서 예외가 발생했는지에 대한 정보는 들어있지 않다.
+ * 따라서 !!단언문을 한 줄에 함께 쓰는 일을 피하라.
+ */
+
+/**
+ * let 함수
+ * let 함수를 안전한 호출 연산자와 함께 사용하면 원하는 식을 평가해
+ * 결과가 널인지 검사한 다음 그 결과를 변수에 넣는 작업을 간단한 식을 사용해 한꺼번에 처리할 수 있다.
+ *
+ * let을 사용하는 가장 흔한 용례는 널이 될 수 있는 값을 널이 아닌 값만 인자로 받는 함수에 넘기는 경우다.
+ */
+fun sendEmailTo(email: String) {
+
+}
+
 fun main() {
     val ceo = Employee("Da Boss", null)
     val developer = Employee("Bob Smith", ceo)
@@ -63,4 +84,10 @@ fun main() {
     val jetbrains = Company("JetBrains", address)
     val person2 = Person("Dmitry", jetbrains)
     printShippingLabel(person2)
+
+    var email: String? = "yole@example.com"
+    email?.let { sendEmailTo(it) }
+    email = null
+    email?.let { sendEmailTo(it) } // email이 null이기 때문에 아무일도 일어나지 않는다.
+
 }
