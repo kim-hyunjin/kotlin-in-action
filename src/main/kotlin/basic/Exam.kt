@@ -1,4 +1,4 @@
-package Basic
+package basic
 
 import java.lang.Exception
 import java.util.Random
