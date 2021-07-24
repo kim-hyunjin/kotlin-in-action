@@ -32,6 +32,22 @@ fun <T> ensureTrailingPeriod(seq: T) where T: CharSequence, T: Appendable { // �
         }
 }
 
+/**
+ * 타입 파라미터를 널이 될 수 없는 타입으로 한정
+ * Any를 상한으로 사용하기
+ */
+class Processor<T> {
+    fun process(value: T) {
+        value?.hashCode() // value는 널이 될 수 있다.
+    }
+}
+
+class Processor2<T: Any> {
+    fun process(value: T) {
+        value.hashCode()
+    }
+}
+
 fun main() {
     println(oneHalf(3))
     println(max("kotlin", "java"))
@@ -39,4 +55,7 @@ fun main() {
     val helloWorld = StringBuilder("Hello World")
     ensureTrailingPeriod(helloWorld)
     println(helloWorld)
+
+    val nullableStringProcessor = Processor<String?>()
+    nullableStringProcessor.process(null)
 }
