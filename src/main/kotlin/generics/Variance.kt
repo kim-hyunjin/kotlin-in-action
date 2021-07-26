@@ -92,4 +92,71 @@ fun main() {
     val strings = mutableListOf("abc", "bac")
 //    addAnswer(strings) // 코틀린에서는 리스트의 변경 가능성에 따라 적절한 인터페이스를 선택하면 안전하지 못한 함수 호출을 막을 수 있다.
 //    println(strings.maxBy { it.length })
+    val ints = mutableListOf(1, 2, 3)
+    val anyItems = mutableListOf<Any>()
+    copyData2(ints, anyItems) // Int가 Any의 하위 타입이므로 이 함수를 호출할 수 있다.
+    println(anyItems)
 }
+
+/**
+ * 반공변성: 뒤집힌 하위 타입 관계
+ *
+ * in이라는 키워드는 그 키워드가 붙은 타입이 이 클래스의 메소드 안으로 전달돼 메소드에 의해 소비된다는 뜻이다.
+ * 공변성의 경우와 마찬가지로 타입 파라미터의 사용을 제한함으로써 특정 하위 타입 관계에 도달할 수 있다.
+ * in 키워드를 타입 인자에 붙이면 그 타입 인자를 오직 인 위치에서만 사용할 수 있다는 뜻이다.
+ */
+interface Comparator<in T> {
+    fun compare(e1: T, e2: T): Int {
+        return 0
+    }
+}
+
+interface Function1<in P, out R> {
+    operator fun invoke(p: P): R
+}
+/**
+ * 사용 지점 변성: 타입이 언급되는 지점에서 변성 지정
+ *
+ * 코틀린 선언 지점 변성과 자바 와일드카드 비교
+ * 선언 지점 변성을 사용하면 변성 변경자를 단 한번만 표시하고 클래스를 쓰는 쪽에서 변성에 대해 신경을 쓸 필요가 없으므로 코드가 더 간결해진다.
+ *
+ * 자바
+ * public interface Stream {
+ *  <R> Stream <R> map(Function<? super T, ? extends R> mapper);
+ * }
+ */
+fun <T> copyData(source: MutableList<T>, destination: MutableList<T>) { // 무공변
+    for (item in source) {
+        destination.add(item)
+    }
+}
+
+fun <T: R, R> copyData2(source: MutableList<T>, destination: MutableList<R>) {
+    for (item in source) {
+        destination.add(item)
+    }
+}
+
+/**
+ * out 키워드를 붙여 T 타입을 in 위치에 사용하는 메소드를 호출하지 않는다는 뜻이다.
+ * 이때 타입 프로젝션(type projection)이 일어난다.
+ * source를 일반적인 MutableList가 아니라 이에 제약을 가한 타입으로 만든다.
+ * 이 경우 MutableList의 메소드 중 T 타입을 반환하는 메소드만 호출 할 수 있다.
+ */
+fun <T> copyData3(source: MutableList<out T>, destination: MutableList<T>) {
+    for (item in source) {
+        destination.add(item)
+    }
+}
+
+// source 리스트 원소 타입의 상위 타입을 destination 리스트 원소 타입으로 혀용한다.
+fun <T> copyData4(source: MutableList<T>, destination: MutableList<in T>) {
+    for (item in source) {
+        destination.add(item)
+    }
+}
+
+/**
+ * MutableList<out T>는 자바의 MutableList<? extends T>와 같고
+ * MutableList<in T>는 자바 MutableList<? super T>와 같다.
+ */
