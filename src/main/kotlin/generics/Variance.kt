@@ -1,5 +1,10 @@
 package generics
 
+import java.lang.IllegalArgumentException
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.reflect.KClass
+
 /**
  * 변성: 제네릭과 하위 타입
  */
@@ -160,3 +165,69 @@ fun <T> copyData4(source: MutableList<T>, destination: MutableList<in T>) {
  * MutableList<out T>는 자바의 MutableList<? extends T>와 같고
  * MutableList<in T>는 자바 MutableList<? super T>와 같다.
  */
+
+/**
+ * 스타 프로젝션: 타입 인자 대신 * 사용
+ * MutableList<Any?>는 모든 타입의 원소를 담을 수 있다는 사실을 알 수 있는 리스트.
+ * MutableList<*>는 어떤 원소 타입을 담는 리스트지만 그 타입을 정확히 모른다는 사실을 표현.
+ *
+ */
+fun starProjection() {
+    val list: MutableList<Any?> = mutableListOf('a', 1, "qwe")
+    val chars = mutableListOf('a', 'b', 'c')
+    val unknownElements: MutableList<*> = if (Random().nextBoolean()) list else chars
+    // unknownElements.add(42) // 에러
+    /**
+     * MutableList<*>는 MutableList<out Any?>처럼 동작한다.
+     * => 어떤 리스트의 원소 타입을 몰라도 안전하게 Any? 타입의 원소를 꺼내올 수는 있지만
+     *    타입을 모르는 리스트에 마음대로 넣을 수는 없다.
+     *
+     * 코틀린의 MyType<*>는 자바의 MyType<?>에 대응한다.
+     */
+
+    val validators = mutableMapOf<KClass<*>, FieldValidator<*>>()
+    validators[String::class] = DefaultStringValidator
+    validators[Int::class] = DefaultIntValidator
+
+//    validators[String::class]!!.validate("") // FieldValidator<*>에 구체적인 타입인 String을 넣을 수 없어 에러
+    val stringValidator = validators[String::class] as FieldValidator<String> // 안전하지 않은 타입 캐스트
+    println(stringValidator.validate(""))
+
+    Validators.registerValidator(String::class, DefaultStringValidator)
+    Validators.registerValidator(Int::class, DefaultIntValidator)
+    println(Validators[String::class].validate("Kotlin"))
+    println(Validators[Int::class].validate(42))
+}
+
+interface FieldValidator<in T> {
+    fun validate(input: T): Boolean
+}
+
+object DefaultStringValidator: FieldValidator<String> {
+    override fun validate(input: String): Boolean {
+        return input.isNotEmpty()
+    }
+}
+
+object DefaultIntValidator: FieldValidator<Int> {
+    override fun validate(input: Int): Boolean {
+        return input >= 0
+    }
+}
+
+object Validators {
+    private val validators = mutableMapOf<KClass<*>, FieldValidator<*>>()
+
+    fun <T: Any> registerValidator(
+        kClass: KClass<T>, fieldValidator: FieldValidator<T>
+    ) {
+        validators[kClass] = fieldValidator
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    operator fun <T: Any> get(kClass: KClass<T>): FieldValidator<T> {
+        return validators[kClass] as? FieldValidator<T>
+            ?: throw IllegalArgumentException("No validator for ${kClass.simpleName}")
+    }
+}
+
