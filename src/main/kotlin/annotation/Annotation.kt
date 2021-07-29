@@ -19,3 +19,25 @@ package annotation
  * const 가 붙은 프로퍼티는 파일의 맨 위나 object 안에 선언해야 하며,
  * 원시 타입이나 String 으로 초기화해야만 한다.
  */
+
+data class Person(
+    @JsonName("alias") val firstName: String,
+    @JsonExclude val age: Int? = null
+)
+
+@Target(AnnotationTarget.PROPERTY) // 애노테이션 적용가능 대상을 지정
+annotation class JsonExclude
+annotation class JsonName(val name: String)
+/*
+* 자바
+* public @interface JsonName {
+*   String value(); // 자바에서 value 메소드는 특별하다. 어떤 애노테이션을 적용할 때 value를 제외한 모든 애트리뷰트에는 이름을 명시해야 한다.
+* }
+* */
+
+/**
+ * 메타 애노테이션: 애노테이션을 처리하는 방법을 제어
+ * 자바와 마찬가지로 코틀린 애노테이션 클래스도 애노테이션을 붙일 수 있다.
+ * 이를 메타애노테이션이라고 부른다.
+ * 컴파일러가 애노테이션을 처리하는 방법을 제어한다.
+ */
