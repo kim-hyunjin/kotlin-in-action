@@ -25,7 +25,13 @@ data class Person(
     @JsonExclude val age: Int? = null
 )
 
-@Target(AnnotationTarget.PROPERTY) // 애노테이션 적용가능 대상을 지정
+/**
+ * 메타 애노테이션: 애노테이션을 처리하는 방법을 제어
+ * 자바와 마찬가지로 코틀린 애노테이션 클래스도 애노테이션을 붙일 수 있다.
+ * 이를 메타애노테이션이라고 부른다.
+ * 컴파일러가 애노테이션을 처리하는 방법을 제어한다.
+ */
+@Target(AnnotationTarget.PROPERTY) // 가장 흔히 쓰이는 메타 애노테이션. 애노테이션 적용가능 대상을 지정.
 annotation class JsonExclude
 annotation class JsonName(val name: String)
 /*
@@ -35,9 +41,3 @@ annotation class JsonName(val name: String)
 * }
 * */
 
-/**
- * 메타 애노테이션: 애노테이션을 처리하는 방법을 제어
- * 자바와 마찬가지로 코틀린 애노테이션 클래스도 애노테이션을 붙일 수 있다.
- * 이를 메타애노테이션이라고 부른다.
- * 컴파일러가 애노테이션을 처리하는 방법을 제어한다.
- */
