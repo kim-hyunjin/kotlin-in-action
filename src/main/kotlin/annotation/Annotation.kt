@@ -1,5 +1,7 @@
 package annotation
 
+import kotlin.reflect.KClass
+
 /**
  * 애노테이션과 리플렉션을 사용하면 미리 알지 못하는 임의의 클래스를 다룰 수 있다.
  * 애노테이션을 사용하면 라이브러리가 요구하는 의미를 클래스에게 부여할 수 있고,
@@ -41,3 +43,29 @@ annotation class JsonName(val name: String)
 * }
 * */
 
+/**
+ * 애노테이션 파라미터로 클래스 사용
+ *
+ * 어떤 클래스를 선언 메타데이터로 참조할 수 있는 기능.
+ *
+ * 클래스 참조를 파라미터로 하는 애노테이션 클래스를 선언하면 사용할 수 있다.
+ */
+interface Company {
+    val name: String
+}
+
+data class CompanyImpl(override val name: String): Company
+
+// Person2 인스턴스를 역직렬화 하는 과정에서 company 프로퍼티를 표현하는 JSON을 읽으면
+// 그 프로퍼티 값에 해당하는 JSON을 역직렬화하면서
+// CompanyImpl의 인스턴스를 만들어서 Person2 인스턴스의 company 프로퍼티에 설정한다.
+data class Person2(
+    val name: String,
+    @DeserializeInterface(CompanyImpl::class) val company: Company
+)
+
+// KClass는 자바 java.lang.Class 타입과 같은 역할을 하는 코틀린 타입이다.
+// 코틀린 클래스에 대한 참조를 저장할 때 KClass 타입을 사용한다.
+// KClass의 타입 파라미터에는 이 KClass의 인스턴스가 가리키는 코틀린 타입을 지정한다.
+@Target(AnnotationTarget.PROPERTY)
+annotation class DeserializeInterface(val targetClass: KClass<out Any>)
