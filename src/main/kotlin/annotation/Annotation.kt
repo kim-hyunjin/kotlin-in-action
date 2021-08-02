@@ -1,5 +1,8 @@
 package annotation
 
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.reflect.KClass
 
 /**
@@ -69,3 +72,39 @@ data class Person2(
 // KClass의 타입 파라미터에는 이 KClass의 인스턴스가 가리키는 코틀린 타입을 지정한다.
 @Target(AnnotationTarget.PROPERTY)
 annotation class DeserializeInterface(val targetClass: KClass<out Any>)
+
+/**
+ * 애노테이션 파라미터로 제네릭 클래스 받기
+ */
+interface ValueSerializer<T> {
+    fun toJsonValue(value: T): Any?
+    fun fromJsonValue(jsonValue: Any?): T
+}
+
+class DateSerializer: ValueSerializer<Date> {
+    override fun toJsonValue(value: Date): Any? {
+        val df: DateFormat = SimpleDateFormat("yyyy-MM-dd")
+        return """
+            {
+                date: "${df.format(value)}"
+            }
+        """.trimIndent()
+    }
+
+    override fun fromJsonValue(jsonValue: Any?): Date {
+        return SimpleDateFormat("yyyy-MM-dd", Locale.KOREA).parse(jsonValue.toString())
+    }
+}
+
+data class Person3(
+    val name: String,
+    @CustomSerializer(DateSerializer::class) val birthDate: Date
+)
+
+annotation class CustomSerializer(
+    val serializerClass: KClass<out ValueSerializer<*>>
+)
+/**
+ * 클래스를 인자로 받아야 한다면, 애노테이션 파라미터 타입에 KClass<out 허용할 클래스 이름>
+ * 제네릭 클래스를 인자로 받아야 한다면, KClass<out 허용할 클래스 이름<*>>
+ */
