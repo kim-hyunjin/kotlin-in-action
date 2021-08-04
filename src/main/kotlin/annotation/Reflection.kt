@@ -1,6 +1,8 @@
 package annotation
 
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction2
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.*
 
 
@@ -42,9 +44,34 @@ import kotlin.reflect.full.*
  */
 class Person4(val name: String, val age: Int)
 
+fun sum(x: Int, y: Int) = x + y
+
+var counter = 0
+
 fun main() {
     val person = Person4("Alice", 29)
     val kClass = person.javaClass.kotlin // KClass<Person4>를 반환한다.
     println(kClass.simpleName)
     kClass.members.forEach { println(it) }
+
+    /**
+     * KFunctionN 인터페이스
+     * 각 KFunctionN 타입은 KFunction을 확장하며, N과 파라미터 개수가 같은 invoke 메소드를 추가로 포함한다.
+     * 예를들어 KFunction2<P1, P2, R>에는 operator fun invoke(p1: P1, p2: P2): R 선언이 들어있다.
+     *
+     * 이런 함수 타입들은 컴파일러가 생성한 합성 타입이다. 따라서 kotlin.reflect 패키지에서 이런 타입의 정의를 찾을 수는 없다.
+     * 코틀린에서는 컴파일러가 생성한 합성 타입을 사용하기 때문에 원하는 수만큼 많은 파라미터를 갖는 함수에 대한 인터페이스를 사용할 수 있다.
+     * 합성 타입을 사용하기 때문에 코틀린은 kotlin-runtime.jar 의 크기를 줄일 수 있고,
+     * 함수 파라미터 개수에 대한 인위적인 제약을 피할 수 있다.
+     *
+     */
+    val kFunction: KFunction2<Int, Int, Int> = ::sum
+    println(kFunction.invoke(1, 2) + kFunction.invoke(3, 4)) // invoke 메소드를 호출할 때 인자 개수나 타입이 안맞으면 컴파일에러
+
+    val kProperty = ::counter
+    kProperty.setter.call(21) // 리플렉션 기능을 통해 세터를 호출
+    println(kProperty.get())
+
+    val memberProperty: KProperty1<Person4, Int> = Person4::age
+    println(memberProperty.get(person))
 }
