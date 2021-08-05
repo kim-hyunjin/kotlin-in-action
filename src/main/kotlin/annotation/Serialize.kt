@@ -2,7 +2,9 @@ package annotation
 
 import java.lang.StringBuilder
 import kotlin.reflect.KAnnotatedElement
+import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
+import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.memberProperties
 
 private fun StringBuilder.serializeObject(obj: Any) {
@@ -21,7 +23,20 @@ private fun StringBuilder.serializeObject(prop: KProperty1<Any, *>, obj: Any) {
     val propName = jsonName?.name ?: prop.name
     append(propName)
     append(": ")
-    append(prop.get(obj))
+    val value = prop.get(obj)
+    // 프로퍼티에 정의된 커스텀 직렬화기가 있으면 그 커스텀 직렬화기 사용
+    val jsonValue = prop.getSerializer()?.toJsonValue(value) ?: value
+    append(jsonValue)
+}
+
+
+fun KProperty<*>.getSerializer(): ValueSerializer<Any?>? {
+    val customSerializer = findAnnotation<CustomSerializer>() ?: return null
+    val serializerClass = customSerializer.serializerClass
+    // 객체에는 object 선언에 의해 생성된 싱글턴을 가리키는 objectInstance 라는 프로퍼티가 있다.
+    val valueSerializer = serializerClass.objectInstance ?: serializerClass.createInstance()
+    @Suppress("UNCHECKED_CAST")
+    return valueSerializer as ValueSerializer<Any?>
 }
 
 // buildString은 StringBuilder를 생성해서 인자로 받은 람다에 넘긴다.
